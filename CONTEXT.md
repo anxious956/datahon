@@ -89,6 +89,14 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 
 | 2026-06-09 | Faz 3 blend text_meta (cat+lgb+xgb) | 76.89 | 87.46 | (proj ~86.29) | GBM diversity +0.37 (güvenilir köprü) |
 | 2026-06-09 | Faz 3 blend +emb_meta | 76.34 | 86.62 | (gerçek ~86.2*) | *emb-şişme diskonto; submit yok |
+| 2026-06-09 | Faz 4 KÜRATÖRLÜ FE + blend | 75.95 | **86.27** | (proj ~86.0) | +0.35 güvenilir; tam FE batırdı, küratör kazandı |
+
+### 🔧 FE DERSİ (2026-06-09)
+- 26-feature geniş FE wOOF'u +0.6 KÖTÜLEŞTİRDİ (86.62→87.22). Suçlular: yıl-türevleri
+  (drift'i kodluyor → geç-yıl metriğinde zarar) + bölme-oranları (NaN gürültüsü).
+- Küratörlü 11-feature (skill/soft/interview mean + maxed_skills + 7 NaN bayrağı) **−0.35** kazandırdı.
+- Genel kural: GBM oran/etkileşimi kendi yakalıyor; sadece **global özet (agregasyon) + eksik-sinyali**
+  (NaN flag) net pozitif. Yıl-türevi feature drift altında ZARARLI.
 
 ### 📌 PLATO (2026-06-09) — mevcut özelliklerle ~86.2 bandı
 - LGBM(89.2)/XGB(90.0) CatBoost'tan (87.83) kötü; blend cat'e yaslanıyor, diversity kazancı zayıf.

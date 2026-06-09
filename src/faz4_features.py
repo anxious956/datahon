@@ -29,8 +29,28 @@ INTERVIEW = ['technical_interview_score','hr_interview_score']
 NA_FLAG_COLS = ['internship_duration_months','english_exam_score','github_avg_stars',
                 'open_source_contribution_count','hr_interview_score','linkedin_profile_score','portfolio_score']
 
+# Faz 8: explicit sentiment leksikonu (kök-bazlı, suffix'e dayanıklı substring).
+# Bağımsız formül-avının tek bulgusu: net = pos - neg, hedefle 0.383 korele (bedava kestirme).
+# GBM'in TF-IDF/embedding meta'sından ÇIKARMAKTA zorlandığı yön bilgisini explicit veriyoruz.
+SENT_POS = ['mükemmel','güçlü','etkileyici','başarılı','yüksek','dikkat çekici','uzmanlık',
+            'olağanüstü','üstün','yetkin','sağlam','parlak','övgü','etkili']
+SENT_NEG = ['ancak','eksik','zayıf','geliştir','yetersiz','sınırlı','daha fazla çalışma',
+            'gelişim göster','düşük','kaygı','endişe','sorun','rağmen','ne yazık']
+TEXT_COL = 'mentor_feedback_text'
 
-def engineer(df):
+
+def add_sentiment(df):
+    """mentor metninden olumlu/olumsuz kelime sayıları (satır-içi, sızıntısız)."""
+    s = df[TEXT_COL].fillna('').str.lower()
+    pos = s.apply(lambda t: sum(t.count(w) for w in SENT_POS))
+    neg = s.apply(lambda t: sum(t.count(w) for w in SENT_NEG))
+    df['sentiment_pos'] = pos.values
+    df['sentiment_neg'] = neg.values
+    df['sentiment_net'] = (pos - neg).values   # asıl sinyal (corr 0.383)
+    return df
+
+
+def engineer(df, sentiment=False):  # Faz 8: sentiment REDDEDİLDİ (wOOF -0.31, text zaten içeriyor)
     """
     Sızıntısız türev feature'lar (yalnız satır-içi, hedef yok). KÜRATÖRLÜ set.
 
@@ -49,6 +69,8 @@ def engineer(df):
     # NaN bayrakları ('yapmadı/yok' anlamı: staj süresi NaN = staj yok, vb.)
     for c in NA_FLAG_COLS:
         df[f'{c}_isna'] = df[c].isna().astype(int)
+    if sentiment and TEXT_COL in df.columns:
+        df = add_sentiment(df)
     return df
 
 

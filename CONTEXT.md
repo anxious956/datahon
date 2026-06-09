@@ -94,6 +94,14 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 | 2026-06-09 | Faz 6 sample-weight EĞİTİM | 77.47 | 87.13 | — | -0.85 NET KAYIP; reddedildi |
 | 2026-06-09 | Faz 7-B BERTurk feature (en iyi) | 75.65 | **86.09** | **84.10** | offset +1.99! public beklenenden çok iyi |
 
+### ❌ Faz 8: explicit sentiment feature REDDEDİLDİ (wOOF -0.31)
+- Formül-avının tek bulgusu: net=pos-neg kelime farkı hedefle 0.383 korele (lokalde doğrulandı 0.383).
+- featB'ye (winner) net+pos+neg eklendi, TEK değişken: wOOF 86.09 -> **86.40 (-0.31, KÖTÜ)**.
+- CatBoost importance düşük (net 0.27, pos/neg ~0.1). Sebep: text_meta(TF-IDF)+emb_meta+berturk_meta
+  bu yönü ZATEN içeriyor -> explicit count redundant + gürültü. Faz 6 gibi reddedildi.
+- engineer() default sentiment=False (winner yolu değişmedi). Ders: TEXT TAM DOYGUN, ham korelasyon
+  != ek katkı. Tek umut çoklu-model çeşitliliği (faz multimodel).
+
 ### 🚀🤔 Faz 7-B public=84.10 — BEKLENENDEN ÇOK İYİ (offset anomalisi)
 - wOOF 86.09 -> public **84.10**. Offset +1.99 (önceki: F1 +1.16, F2.1 +1.17, F2.2 +0.43).
 - Public, wOOF tahmininden ~2 puan İYİ (e5-şişme'nin TERSİ). Önceki LB #1 84.96'yı geçtik -> muhtemelen #1.

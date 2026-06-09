@@ -87,6 +87,17 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
   public'e güven.** GBM model-çeşitliliği (Faz 3) kazancı daha "gerçek" beklenir.
 - Embedding yine de KEEP (gerçek +0.33, en iyi public 86.32) ama beklenti düşük tutulacak.
 
+| 2026-06-09 | Faz 3 blend text_meta (cat+lgb+xgb) | 76.89 | 87.46 | (proj ~86.29) | GBM diversity +0.37 (güvenilir köprü) |
+| 2026-06-09 | Faz 3 blend +emb_meta | 76.34 | 86.62 | (gerçek ~86.2*) | *emb-şişme diskonto; submit yok |
+
+### 📌 PLATO (2026-06-09) — mevcut özelliklerle ~86.2 bandı
+- LGBM(89.2)/XGB(90.0) CatBoost'tan (87.83) kötü; blend cat'e yaslanıyor, diversity kazancı zayıf.
+- Ensemble tek başına yetmiyor. Gerçek ilerleme için: **(a) CatBoost hiperparametre tuning**
+  (workhorse o), **(b) feature engineering** (zengin sayısal kolonlardan oran/etkileşim/agregasyon),
+  **(c) geç-yıl yüksek-varyans için hedef dönüşümü** denenebilir.
+- Bugün 4 submission kullanıldı (limit 5/gün), 1 hak kaldı; yarışmaya 5 gün var. Son hakkı
+  marjinal ensemble'a harcamak yerine lokalde daha büyük kazanç aranmalı.
+
 **Köprü offset SABİT (2 rejim):** Faz 1 ağırlıklı 92.38→public 91.22 (offset +1.16); Faz 2.1 ağırlıklı 87.83→public 86.66 (offset +1.17). Ağırlıklı OOF, public'i **~1.17 pesimist sabit offset**le izliyor → kalan geliştirmeler lokalde, ağırlıklı OOF düşüşü public'e ~1:1 yansır. **Faz 2.1 = güçlü final aday** (LB best 86.427'ye 0.23 fark, embedding'siz/açıklanabilir).
 
 ### 🔑 KÖPRÜ MÜHÜRLENDİ — test-yıl-ağırlıklı OOF ≈ public

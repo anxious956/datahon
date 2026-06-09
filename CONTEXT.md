@@ -76,7 +76,16 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 | 2026-06-09 | Faz 1 CatBoost (metinsiz, 44 feat) | 81.19 | 92.38 | **91.22** | köprü kalibre edildi |
 | 2026-06-09 | Faz 2.0 +metin (word TF-IDF→Ridge) | 77.73 | 88.49 | (proj ~87.3, submit yok) | metin −3.89 ağırlıklı, çoğu 2025 |
 | 2026-06-09 | Faz 2.1 +word+char(3,5)-gram | 77.24 | 87.83 | **86.66** | char +0.66; köprü 2. kez doğrulandı |
-| 2026-06-09 | Faz 2.2 +e5-base emb_meta (KEEP) | 76.50 | 86.75 | (proj ~85.58) | emb +1.08; çoğu 2026(+2.35) transfer-learning |
+| 2026-06-09 | Faz 2.2 +e5-base emb_meta (KEEP) | 76.50 | 86.75 | **86.32** | emb OOF −1.08 AMA public yalnız −0.33! |
+
+### ⚠️ KÖPRÜ UYARISI — embedding meta-feature OOF'u ŞİŞİYOR
+- TF-IDF/GBM köprüsü 2 kez ±0.04 birebir tuttu (offset ~1.17). Ama embedding ekleyince
+  offset **1.17 → 0.43**'e düştü: ağırlıklı OOF 86.75 dedi, public **86.32** geldi.
+- Embedding'in OOF kazancı (−1.08) gerçeğe ancak **~⅓** yansıdı (gerçek public kazancı −0.33).
+- **Sebep:** 768-boyut yoğun embedding üzerine Ridge meta-feature, paylaşılan-fold stacking'de
+  OOF'u overfit ediyor (seyrek TF-IDF bunu yapmıyor). → **embedding/meta OOF kazançlarını DİSKONTO et,
+  public'e güven.** GBM model-çeşitliliği (Faz 3) kazancı daha "gerçek" beklenir.
+- Embedding yine de KEEP (gerçek +0.33, en iyi public 86.32) ama beklenti düşük tutulacak.
 
 **Köprü offset SABİT (2 rejim):** Faz 1 ağırlıklı 92.38→public 91.22 (offset +1.16); Faz 2.1 ağırlıklı 87.83→public 86.66 (offset +1.17). Ağırlıklı OOF, public'i **~1.17 pesimist sabit offset**le izliyor → kalan geliştirmeler lokalde, ağırlıklı OOF düşüşü public'e ~1:1 yansır. **Faz 2.1 = güçlü final aday** (LB best 86.427'ye 0.23 fark, embedding'siz/açıklanabilir).
 

@@ -92,7 +92,16 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 | 2026-06-09 | Faz 4 KÜRATÖRLÜ FE + blend | 75.95 | **86.27** | (proj ~86.0) | +0.35 güvenilir; tam FE batırdı, küratör kazandı |
 | 2026-06-09 | Faz 5 +lineer Ridge (4-yönlü) | 75.85 | 86.24 | (~86.0) | +0.04 marjinal; lineer geç-yılda zayıf |
 | 2026-06-09 | Faz 6 sample-weight EĞİTİM | 77.47 | 87.13 | — | -0.85 NET KAYIP; reddedildi |
-| 2026-06-09 | Faz 7-B BERTurk feature (en iyi) | 75.65 | **86.09** | (proj ~85.7*) | +0.18 wOOF, çoğu 2026(+1.03); *OOF şişebilir |
+| 2026-06-09 | Faz 7-B BERTurk feature (en iyi) | 75.65 | **86.09** | **84.10** | offset +1.99! public beklenenden çok iyi |
+
+### 🚀🤔 Faz 7-B public=84.10 — BEKLENENDEN ÇOK İYİ (offset anomalisi)
+- wOOF 86.09 -> public **84.10**. Offset +1.99 (önceki: F1 +1.16, F2.1 +1.17, F2.2 +0.43).
+- Public, wOOF tahmininden ~2 puan İYİ (e5-şişme'nin TERSİ). Önceki LB #1 84.96'yı geçtik -> muhtemelen #1.
+- Public sıçraması (86.32->84.10 = +2.22) wOOF iyileşmesinden (0.66) ~3x büyük -> köprü bu model
+  sınıfı için kararsız. İki olasılık: (a) FE+ensemble+berturk gerçekten public'e iyi genelliyor,
+  (b) public %60 alt-kümesi lehimize. PRIVATE (%40) final'i belirler -> robustluk şart.
+- AKSIYON: Faz 7-B = 1 final aday. 2. aday için robust/farklı bir varyant seç (public-şans hedge'i).
+  Köprü artık bu sınıfta güvenilmez -> kalan kararlarda dikkatli, public ile teyit.
 
 ### 🤖 BERTurk SONUCU (2026-06-09)
 - Fine-tuned BERTurk standalone OOF: düz 130.11 / ağırlıklı 146.67 -> donuk e5'i (157/180) ~34 puan geçti.

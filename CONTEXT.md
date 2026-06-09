@@ -132,6 +132,35 @@ Yerel veri zip'i (`datathon2026.zip`) üzerinde teşhis çalıştırıldı. Sonu
 > Yani sayısal+kategorik sinyal MSE'yi ~%63 düşürüyor; metin (`mentor_feedback_text`) henüz
 > büyük olasılıkla tam sömürülmedi → asıl ayrışma orada. Faz 2'nin önceliği yüksek.
 
+### ⚠️ Faz 0 submission sonucu — TEMPORAL KAYMA (2026-06-09, KRİTİK)
+
+Sabit-ortalama (76.94) submission'ı atıldı → **Public MSE = 274.72.**
+Beklenen 230.6 değil! Fark = **+44.1**. Bu rastgele örnekleme gürültüsü DEĞİL (~10σ).
+
+**Teşhis: train/test ayrımı ZAMANSAL.**
+- `application_year`/`graduation_year` ~0.6 std kaymış; diğer 37 sayısal ve 5 kategorik
+  özellik neredeyse aynı (std_diff < 0.03). → tek kayma kaynağı **yıl**.
+- **train yıllara ~uniform** (2019–2026, her biri ~%12); **test geç yıllara ağırlıklı**
+  (2024+2025+2026 ≈ test'in **%62'si**, train'de ~%35).
+- **Hedef yılla değişiyor:** geç kohortlar hem **daha düşük ortalama** hem **daha yüksek varyans**:
+  2019–2023 → mean ~77.5, std ~13; **2025 → mean 75.5, std 18.3; 2026 → mean 74.2, std 18.0**.
+- **Doğrulama:** train'in yıl-bazlı (mean,var) istatistiklerini test'in yıl oranlarıyla
+  ağırlıklandırınca sabit-baseline tahmini = **266.8** (gerçek 274.7'ye çok yakın). Hipotez sağlam.
+- Train **2019–2026'nın tamamını** kapsıyor → görülmemiş yıl YOK; bu *prior-probability shift*
+  (yıl oranları kaymış), sert ekstrapolasyon değil. Yönetilebilir.
+
+**Faz 1 için bağlayıcı sonuç — DÜZ RANDOM K-FOLD CV YANILTICI OLUR:**
+- Random fold'lar train'in "230 dünyası"nı ölçer; gerçek test "≈275 dünyası". Yani düz OOF MSE
+  public'ten **sistematik olarak iyimser** çıkar (tam da bugün gördüğümüz 230 vs 274).
+- **Çözüm:** CV'yi test-temsili yap. Ana takip metriği = **test-yıl-ağırlıklı OOF MSE**
+  (her OOF hatasını `test_yıl_oranı / train_yıl_oranı` ile ağırlıkla → importance weighting).
+  Bu sayı public LB'yi izlemeli. Ayrıca **OOF'u yıla göre kır** ve özellikle 2025–2026'da raporla.
+- Fold'ları hedef-bin + (tercihen) yıl ile stratify et. Model **seçimi** için göreli sıralama
+  düz CV'de de geçerli; ama mutlak public tahmini için yıl-ağırlıklı sayıyı kullan.
+- `application_year`/`graduation_year` hem güçlü feature hem kayma sürücüsü — modele dahil et,
+  ama yıl-aşırı genelleme yeteneğini izle (geç yıllar daha yüksek varyans = içsel olarak daha zor;
+  MSE'nin yaşadığı yer orası → metin sinyali geç kohortta orantısız değerli olabilir).
+
 ## 9. Hızlı Teşhis Kodu (ilk çalıştır)
 
 ```python

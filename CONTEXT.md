@@ -90,6 +90,18 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 | 2026-06-09 | Faz 3 blend text_meta (cat+lgb+xgb) | 76.89 | 87.46 | (proj ~86.29) | GBM diversity +0.37 (güvenilir köprü) |
 | 2026-06-09 | Faz 3 blend +emb_meta | 76.34 | 86.62 | (gerçek ~86.2*) | *emb-şişme diskonto; submit yok |
 | 2026-06-09 | Faz 4 KÜRATÖRLÜ FE + blend | 75.95 | **86.27** | (proj ~86.0) | +0.35 güvenilir; tam FE batırdı, küratör kazandı |
+| 2026-06-09 | Faz 5 +lineer Ridge (4-yönlü) | 75.85 | 86.24 | (~86.0) | +0.04 marjinal; lineer geç-yılda zayıf |
+
+### 📐 LİNEER MODEL DERSİ (2026-06-09, DS-analizi takibi)
+- DS bulgusu: hedef büyük ölçüde lineer (sadece-sayısal Ridge R²≈0.573). Tam feature setiyle lineer
+  düz OOF 85.26 (R²≈0.63) — GBM'e (76, R²≈0.67) yakın. Hipotez sağlamdı.
+- AMA ağırlıklı (geç-yıl) OOF: lineer **98.6** vs GBM **86.6**. Lineer 2025-2026'da çok zayıf;
+  örnek-ağırlığı da kurtarmadı (97.1). 4-yönlü blend kazancı sadece **+0.04** (lin ağırlık 0.05).
+- İçgörü: hedef erken-yılda lineer ama MSE'nin yaşadığı geç-yıl (yüksek varyans + kayma) kısmı
+  nonlineer/shift yapısı taşıyor; GBM orayı yakalıyor, lineer yakalayamıyor. Lineer = gerçek
+  çeşitlilik ama zayıf üye → küçük ağırlıkla tutulur (zarsız, robustluk), plato-kıran DEĞİL.
+- Plato-kıran tek koz hâlâ **BERTurk** (text); DS residual testi: metnin bağımsız sinyali az
+  (+0.5-1 beklenti). Strateji: FE(+0.35)+lineer(+0.04)+BERTurk(+0.5-1) BİRİKİMLİ ~85.3 hedefi.
 
 ### 🔧 FE DERSİ (2026-06-09)
 - 26-feature geniş FE wOOF'u +0.6 KÖTÜLEŞTİRDİ (86.62→87.22). Suçlular: yıl-türevleri

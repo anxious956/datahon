@@ -68,6 +68,21 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 
 **Teşhis submission'ı:** İlk iş — hedefin ortalamasını sabit tahmin edip submit et. Bu, "hiçbir şey öğrenmeden" MSE'yi (≈ hedef varyansı) verir. 86 ile kıyaslayınca modellerin ne kadar sinyal çıkardığı ve kalan headroom görülür.
 
+### 📒 Submission / deney günlüğü (gerçek public skorlar)
+
+| Tarih | Model | Düz OOF | Ağırlıklı OOF | **Public** | Not |
+|---|---|---|---|---|---|
+| 2026-06-09 | Faz 0 sabit-ortalama (76.94) | (var) 230.6 | — | **274.72** | temporal kayma ortaya çıktı |
+| 2026-06-09 | Faz 1 CatBoost (metinsiz, 44 feat) | 81.19 | 92.38 | **91.22** | köprü kalibre edildi |
+
+### 🔑 KÖPRÜ MÜHÜRLENDİ — test-yıl-ağırlıklı OOF ≈ public
+Faz 1: ağırlıklı OOF **92.38** vs gerçek public **91.22** → fark **+1.16** (%1.3, **pesimist** yönde, yani güvenli).
+Düz OOF (81.19) ise public'ten 10 puan iyimserdi → **düz OOF'a GÜVENME, ağırlıklıyı kullan.**
+**Sonuç:** Faz 2+ lokalde, **submission harcamadan** ilerletilebilir; ağırlıklı OOF'taki iyileşme public'e
+en az o kadar yansır. (İsteğe bağlı ince ayar: ağırlığa `graduation_year` da katılırsa ~1 puanlık
+pesimist sapma kapanabilir; şu an gerek yok, tek-`application_year` ağırlığı güvenli yönde.)
+
+
 ## 6. Strateji / Pipeline Planı
 
 **Faz 0 — Teşhis (bugün):**

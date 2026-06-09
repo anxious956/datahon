@@ -91,6 +91,18 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 | 2026-06-09 | Faz 3 blend +emb_meta | 76.34 | 86.62 | (gerçek ~86.2*) | *emb-şişme diskonto; submit yok |
 | 2026-06-09 | Faz 4 KÜRATÖRLÜ FE + blend | 75.95 | **86.27** | (proj ~86.0) | +0.35 güvenilir; tam FE batırdı, küratör kazandı |
 | 2026-06-09 | Faz 5 +lineer Ridge (4-yönlü) | 75.85 | 86.24 | (~86.0) | +0.04 marjinal; lineer geç-yılda zayıf |
+| 2026-06-09 | Faz 6 sample-weight EĞİTİM | 77.47 | 87.13 | — | -0.85 NET KAYIP; reddedildi |
+
+### ⛔ SAMPLE-WEIGHT EĞİTİM DENENDİ, REDDEDİLDİ (2026-06-09) — kritik içgörü
+- GBM'leri test-yıl ağırlığıyla eğittik (geç-yıl up-weight) + early stopping ağırlıklı val'da.
+- Sonuç: blend wOOF 86.27 -> 87.13 (-0.85). Yıl kırılımı: geç-yıl 2025/2026 yalnız +0.24/+0.25
+  (mikroskobik) iyileşti; erken/orta yıllar -2..-3.5 BOZULDU. Ağırlıklı toplamda net kayıp.
+- **İÇGÖRÜ:** Geç-yıl yüksek MSE'si model yanlış-odaklanması DEĞİL; mevcut feature'larla büyük
+  ölçüde İNDİRGENEMEZ (irreducible noise). Reweighting oraya yardım etmiyor (+0.24 tavan),
+  sadece öğrenilebilir erken-yılı feda ediyor.
+- **STRATEJİK SONUÇ:** İlk 3'e fark (~1.3) reweighting'le KAPANMAZ; yalnız YENİ SİNYAL ile kapanır
+  (geç-yılda yeni bilgi = BERTurk text). DS residual üst sınırı +0.5-1 -> ilk 3 zor ama BERTurk
+  tek gerçek koz. Eval-ağırlığı (köprü) korunur; EĞİTİM-ağırlığı kullanılmaz.
 
 ### 📐 LİNEER MODEL DERSİ (2026-06-09, DS-analizi takibi)
 - DS bulgusu: hedef büyük ölçüde lineer (sadece-sayısal Ridge R²≈0.573). Tam feature setiyle lineer

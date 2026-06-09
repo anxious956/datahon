@@ -92,6 +92,16 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 | 2026-06-09 | Faz 4 KÜRATÖRLÜ FE + blend | 75.95 | **86.27** | (proj ~86.0) | +0.35 güvenilir; tam FE batırdı, küratör kazandı |
 | 2026-06-09 | Faz 5 +lineer Ridge (4-yönlü) | 75.85 | 86.24 | (~86.0) | +0.04 marjinal; lineer geç-yılda zayıf |
 | 2026-06-09 | Faz 6 sample-weight EĞİTİM | 77.47 | 87.13 | — | -0.85 NET KAYIP; reddedildi |
+| 2026-06-09 | Faz 7-B BERTurk feature (en iyi) | 75.65 | **86.09** | (proj ~85.7*) | +0.18 wOOF, çoğu 2026(+1.03); *OOF şişebilir |
+
+### 🤖 BERTurk SONUCU (2026-06-09)
+- Fine-tuned BERTurk standalone OOF: düz 130.11 / ağırlıklı 146.67 -> donuk e5'i (157/180) ~34 puan geçti.
+  Fold seçimleri 0-3 ep1, fold4 ep0 (hiç ep2 -> MAX=3 doğru).
+- ENTEGRASYON: (A) sabit-ağırlık blend BAŞARISIZ — her α>0 wOOF'u kötüleştirdi (BERTurk-only çok zayıf,
+  decorrelation yetersiz). (B) FEATURE olarak +0.18 wOOF (86.27->86.09), çoğu 2026(+1.03).
+- DÜRÜST: BERTurk standalone muhteşem ama ensemble'a MARJİNAL (+0.18) — text_meta+emb_meta text sinyalini
+  zaten yakalamıştı. DS residual üst sınırı +0.5-1 idi, +0.18 onun da altında -> text sinyali DOYGUN.
+- +0.18 OOF e5-gibi ŞİŞEBİLİR -> public şart. En iyi model = Faz 7-B (FE+3GBM+text+emb+berturk, wOOF 86.09).
 
 ### ⛔ SAMPLE-WEIGHT EĞİTİM DENENDİ, REDDEDİLDİ (2026-06-09) — kritik içgörü
 - GBM'leri test-yıl ağırlığıyla eğittik (geç-yıl up-weight) + early stopping ağırlıklı val'da.

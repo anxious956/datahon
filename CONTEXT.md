@@ -99,14 +99,38 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 - `test_x.csv` adını unutma (test.csv değil).
 - Kategorik dtype'ları ve eksik değerleri açılışta raporla.
 
-## 8. Açıldığında İLK Teyit Edilecekler (henüz bilinmiyor)
+## 8. Açıldığında İLK Teyit Edilecekler — ✅ TEYİT EDİLDİ (2026-06-09)
 
-- [ ] `/kaggle/input/` altındaki klasör adı
-- [ ] train.csv satır sayısı + gerçek kolon sayısı + dtype'lar
-- [ ] `mentor_feedback_text` dili (TR / EN / karışık)
-- [ ] hedefin dağılımı (describe: mean, std, min, max, çarpıklık)
-- [ ] `sample_submission.csv`'nin birebir kolon yapısı
-- [ ] eksik değer (NaN) durumu, özellikle metin alanında
+Yerel veri zip'i (`datathon2026.zip`) üzerinde teşhis çalıştırıldı. Sonuçlar:
+
+- [x] **Klasör adı:** Kaggle'da `/kaggle/input/*` ile otomatik bulunuyor (zip kökünde 3 dosya).
+- [x] **Boyut:** `train` = **10000 × 47**, `test_x` = **10000 × 46** (hedef yok). Kolonlar:
+  `student_id` (ID) + `career_success_score` (hedef) + `mentor_feedback_text` (metin)
+  + **5 kategorik** + **39 sayısal**. dtype: 26 float, 14 int, 7 str.
+- [x] **Metin dili:** **TÜRKÇE** (TR'ye özgü karakter oranı 0.998, TR-kelime 0.996 vs EN 0.003).
+  10000/10000 benzersiz, NaN yok, boş yok, uzunluk ~143–447 char (ort. ~274).
+  → Embedding için **Türkçe/multilingual** model gerekir (örn. `dbmdz/bert-base-turkish`,
+  `intfloat/multilingual-e5`, ya da TR-uyumlu sentence-transformers).
+- [x] **Hedef dağılımı:** mean **76.94**, std **15.19**, min **0**, max **100**,
+  skew **-0.45** (sola çarpık, düşük skorlu kuyruk), kurt -0.15. Aralık tam 0–100, taşma yok.
+  **var(pop) = 230.61** → sabit-ortalama submission'ın beklenen public MSE'si ≈ **230.6**.
+- [x] **sample_submission:** kolonlar `student_id, career_success_score`. ⚠️ **SADECE 2 SATIR** —
+  bu bir FORMAT örneği (değerleri rastgele; biri 123.94 ile 100 üstü). Gerçek submission
+  `test_x`'in 10000 satırının TAMAMI için, **test_x ID'lerinden** kurulmalı. `sub.copy()` KULLANMA.
+- [x] **Eksik değerler (train):** `internship_duration_months` 1657, `english_exam_score` 953,
+  `github_avg_stars` 910, `open_source_contribution_count` 910, `hr_interview_score` 780,
+  `linkedin_profile_score` 668, `portfolio_score` 364. (test_x'te benzer oranlar.)
+  **Metin alanında NaN YOK.** → CatBoost NaN'ı native yönetir; lineer/embedding adımında impute gerekir.
+
+**Kategorik kolonlar (kardinalite):** `department` (7), `university_tier` (4, Tier 1–4),
+`target_role` (11), `hobby` (8), `preferred_social_media_platform` (6). Hepsinde NaN yok.
+
+> ⚙️ **pandas 3 notu:** pandas 3.x metni `object` yerine `str` (StringDtype) işaretler;
+> `dtype=='object'` kontrolü kategorikleri kaçırır. Teşhis kodu `is_string_dtype` ile düzeltildi.
+
+> 📉 **Headroom gözlemi:** sabit-ortalama MSE ≈ **230.6**, public LB en iyi ≈ **86.4**.
+> Yani sayısal+kategorik sinyal MSE'yi ~%63 düşürüyor; metin (`mentor_feedback_text`) henüz
+> büyük olasılıkla tam sömürülmedi → asıl ayrışma orada. Faz 2'nin önceliği yüksek.
 
 ## 9. Hızlı Teşhis Kodu (ilk çalıştır)
 

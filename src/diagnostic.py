@@ -44,28 +44,34 @@ def main():
     s = txt.dropna().head(2000).str.lower()
     tr = s.str.contains(r'[çğışöü]', regex=True).mean()
     print("TR'ye özgü karakter oranı:", round(float(tr), 3),
-          "=>", "TR ağırlıklı" if tr > 0.3 else "EN/karışık (manuel doğrula)")
+          "=>", "TR agirlikli" if tr > 0.3 else "EN/karisik (manuel dogrula)")
 
     # --- 5. Eksik değerler ---
     na = train.isna().sum(); na = na[na > 0]
     print("\n[eksik]", na.to_dict() if len(na) else "yok")
 
     # --- 6. Kolon envanteri ---
+    # Robust string tespiti: pandas 2.x -> 'object', pandas 3.x -> 'str' (StringDtype).
     print("\n[dtype]"); print(train.dtypes.value_counts())
-    cat_cols = [c for c in train.columns if train[c].dtype == 'object' and c not in (ID, TEXT)]
+    def is_str_col(col):
+        return (col.dtype == 'object' or pd.api.types.is_string_dtype(col)) \
+            and not pd.api.types.is_numeric_dtype(col)
+    cat_cols = [c for c in train.columns if c not in (ID, TEXT) and is_str_col(train[c])]
     num_cols = [c for c in train.columns if c not in (ID, TARGET, TEXT, *cat_cols)]
     print("kategorik (%d):" % len(cat_cols), cat_cols)
-    print("sayısal (%d):" % len(num_cols), num_cols)
+    print("sayisal (%d):" % len(num_cols), num_cols)
 
     # --- 7. Faz 0 submission ---
+    # DIKKAT: sample_submission yalnizca format ornegi (cok az satir). Gercek
+    # submission test_x'in TUM satirlari icin, test ID'lerinden kurulmali.
     id_col = sub.columns[0]
     tgt_col = [c for c in sub.columns if c != id_col][0]
-    out = sub.copy()
-    out[id_col] = test[id_col].values if id_col in test.columns else sub[id_col].values
-    out[tgt_col] = np.clip(float(y.mean()), 0, 100)
+    out = pd.DataFrame({id_col: test[id_col].values,
+                        tgt_col: np.clip(float(y.mean()), 0, 100)})
+    assert len(out) == len(test)
     out.to_csv('/kaggle/working/sub_phase0_constant_mean.csv', index=False)
     print("\n[Faz 0] sabit tahmin =", round(float(y.mean()), 4),
-          "-> sub_phase0_constant_mean.csv yazıldı")
+          "| satir =", len(out), "-> sub_phase0_constant_mean.csv yazildi")
 
 
 if __name__ == '__main__':

@@ -74,6 +74,8 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 |---|---|---|---|---|---|
 | 2026-06-09 | Faz 0 sabit-ortalama (76.94) | (var) 230.6 | — | **274.72** | temporal kayma ortaya çıktı |
 | 2026-06-09 | Faz 1 CatBoost (metinsiz, 44 feat) | 81.19 | 92.38 | **91.22** | köprü kalibre edildi |
+| 2026-06-09 | Faz 2.0 +metin (word TF-IDF→Ridge) | 77.73 | 88.49 | (proj ~87.3, submit yok) | metin −3.89 ağırlıklı, çoğu 2025 |
+| 2026-06-09 | Faz 2.1 +word+char(3,5)-gram | 77.24 | **87.83** | (proj ~86.7, submit yok) | char +0.66, çoğu 2026/2025 (alpha=5) |
 
 ### 🔑 KÖPRÜ MÜHÜRLENDİ — test-yıl-ağırlıklı OOF ≈ public
 Faz 1: ağırlıklı OOF **92.38** vs gerçek public **91.22** → fark **+1.16** (%1.3, **pesimist** yönde, yani güvenli).

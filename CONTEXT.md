@@ -94,6 +94,15 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 | 2026-06-09 | Faz 6 sample-weight EĞİTİM | 77.47 | 87.13 | — | -0.85 NET KAYIP; reddedildi |
 | 2026-06-09 | Faz 7-B BERTurk feature (en iyi) | 75.65 | **86.09** | **84.10** | offset +1.99! public beklenenden çok iyi |
 
+### 🎯 Faz 9: GBM Optuna TUNING — BÜYÜK KAZANÇ (wOOF 86.09 -> 85.49, +0.60)
+- Savaş planı #1. 3 GBM ayrı tune (Optuna TPE, test-yıl-ağırlıklı OOF hedefi, aynı fold'lar, fold-pruning).
+- Tuned tekil: cat 86.07 (default 86.89, +0.82!), lgb 86.71, xgb 86.38 (default xgb berbattı).
+- Blend cat0.50/lgb0.25/xgb0.25 -> wOOF **85.4920** (Faz7-B 86.09'dan **+0.60**). En büyük tek kazanç.
+- Köprü tutarsa (offset +1.99) proj public ~83.5 -> #1 bölgesi (lider 83.70). GBM köprüsü sağlam,
+  bu kazanç GERÇEK (tuning honest). Tuned OOF/test -> oof/test_tuned_*.npy (bagging/stacker kullanır).
+- Not: arama depth<=8 + iter 1500/2500 (hız); final retrain 3000/5000. best_params faz9_tuning_log.json.
+- Submission hazır: sub_2026-06-10_tuned_blend_woof85.49.csv (YARIN submit adayı #1).
+
 ### ❌ Faz 8: explicit sentiment feature REDDEDİLDİ (wOOF -0.31)
 - Formül-avının tek bulgusu: net=pos-neg kelime farkı hedefle 0.383 korele (lokalde doğrulandı 0.383).
 - featB'ye (winner) net+pos+neg eklendi, TEK değişken: wOOF 86.09 -> **86.40 (-0.31, KÖTÜ)**.

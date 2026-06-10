@@ -94,6 +94,17 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 | 2026-06-09 | Faz 6 sample-weight EĞİTİM | 77.47 | 87.13 | — | -0.85 NET KAYIP; reddedildi |
 | 2026-06-09 | Faz 7-B BERTurk feature (en iyi) | 75.65 | **86.09** | **84.10** | offset +1.99! public beklenenden çok iyi |
 
+### ⚠️🔑 Faz 9 tuned PUBLIC=84.19 — wOOF KAZANCI TRANSLATE ETMEDİ (metrik overfit!)
+- tuned wOOF 85.49 (-0.60) AMA public **84.19** vs featB 84.10 -> **0.09 KÖTÜ**. Offset +1.99'dan +1.30'a kaydı.
+- TEŞHİS: 150 trial'ı test-yıl-AĞIRLIKLI OOF'a karşı optimize ettik. Bu ağırlıklandırma train'in AZ olan
+  geç-yıl satırlarını yukarı çekiyor; ona sıkı optimize etmek o spesifik train satırlarına overfit etti,
+  gerçek test geç-yıl dağılımına DEĞİL. wOOF düştü (reweighted train'i daha iyi fitledik) ama public düşmedi.
+- KÖPRÜ DERSİ: wOOF büyük değişikliklerde (text/berturk) tuttu AMA ince hiperparametre ayrımında GÜVENİLMEZ.
+  Bundan sonra ince kararları wOOF ile DEĞİL public ile ver. Default-yakını paramlar (featB) daha iyi genelliyor.
+- SONUÇ: en iyi public hâlâ **featB 84.10**. tuned/bagged/stacker hepsi ~84.1-84.2 (wOOF-overfit aynı aile).
+  PLATO ~84.1. Kırmak için YAPISAL yeni sinyal gerek -> transformer çeşitliliği (tek gerçek umut).
+- pseudo (wOOF 84.30) artık DAHA şüpheli (en çok inflasyon); farklı mekanizma ama beklenti düşük.
+
 ### 🎯 Faz 9: GBM Optuna TUNING — BÜYÜK KAZANÇ (wOOF 86.09 -> 85.49, +0.60)
 - Savaş planı #1. 3 GBM ayrı tune (Optuna TPE, test-yıl-ağırlıklı OOF hedefi, aynı fold'lar, fold-pruning).
 - Tuned tekil: cat 86.07 (default 86.89, +0.82!), lgb 86.71, xgb 86.38 (default xgb berbattı).

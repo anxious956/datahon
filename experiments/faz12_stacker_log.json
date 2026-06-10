@@ -1,0 +1,37 @@
+{
+  "phase": "faz12_stacker",
+  "date": "2026-06-10",
+  "base_models": [
+    "tuned_cat",
+    "tuned_lgb",
+    "tuned_xgb",
+    "bag_cat",
+    "bag_lgb",
+    "bag_xgb",
+    "berturk"
+  ],
+  "results_woof": {
+    "ridge_a1": 85.46180057077764,
+    "ridge_a10": 85.46177176699156,
+    "ridge_a50": 85.46164454214866,
+    "ridge_a100": 85.46148731592241,
+    "nnls": 85.6297863062203
+  },
+  "best_single": {
+    "name": "bag_cat",
+    "woof": 86.03054483570061
+  },
+  "equal_blend_woof": 87.91919557513097,
+  "best_method": "ridge_a100",
+  "best_woof": 85.46148731592241,
+  "final_coef": {
+    "tuned_cat": 0.2812,
+    "tuned_lgb": 0.1155,
+    "tuned_xgb": 0.1268,
+    "bag_cat": 0.2352,
+    "bag_lgb": 0.1336,
+    "bag_xgb": 0.1278,
+    "berturk": 0.0
+  },
+  "WARNING": "meta-model OOF sismesi mumkun; public dogrulamasi sart"
+}

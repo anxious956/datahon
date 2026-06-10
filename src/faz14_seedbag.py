@@ -63,10 +63,10 @@ def set_seed(seed):
     f3.SEED = seed
 
 
-def run_featB(train_fe, test_fe, y, w, txt_tr, txt_te, num_cols, cat_cols,
-              emb_tr_raw, emb_te_raw, bt_tr, bt_te, folds):
-    """faz7 'B yolu' (featB) tek seed için: FE + 3-GBM + text_meta + emb_meta + berturk_meta."""
-    # Fold'a bağlı meta-feature'lar (bu seed'in fold'larıyla yeniden türetilir, leakage-free)
+def build_featB_X(train_fe, test_fe, txt_tr, txt_te, y, num_cols, cat_cols,
+                  emb_tr_raw, emb_te_raw, bt_tr, bt_te, folds):
+    """featB feature matrislerini kur: FE + sayısal/kategorik + text_meta + emb_meta + berturk_meta.
+    Meta-feature'lar bu seed'in fold'larıyla leakage-free türetilir. Döner: Xc, Xc_t, Xg, Xg_t, cat_idx, feats."""
     tm_tr, tm_te = build_charword_meta(txt_tr, txt_te, y, folds)
     em_tr, em_te = build_emb_meta(emb_tr_raw, emb_te_raw, y, folds)
     meta_map = {'text_meta': (tm_tr, tm_te), 'emb_meta': (em_tr, em_te),
@@ -84,7 +84,15 @@ def run_featB(train_fe, test_fe, y, w, txt_tr, txt_te, num_cols, cat_cols,
         Xc[m] = a; Xc_t[m] = b; Xg[m] = a; Xg_t[m] = b
     feats = cols + list(meta_map)
     ci = [feats.index(c) for c in cat_cols]
+    return Xc, Xc_t, Xg, Xg_t, ci, feats
 
+
+def run_featB(train_fe, test_fe, y, w, txt_tr, txt_te, num_cols, cat_cols,
+              emb_tr_raw, emb_te_raw, bt_tr, bt_te, folds):
+    """faz7 'B yolu' (featB) tek seed için: FE + 3-GBM + text_meta + emb_meta + berturk_meta."""
+    Xc, Xc_t, Xg, Xg_t, ci, feats = build_featB_X(
+        train_fe, test_fe, txt_tr, txt_te, y, num_cols, cat_cols,
+        emb_tr_raw, emb_te_raw, bt_tr, bt_te, folds)
     oc, tc, _, _ = run_catboost_cv(Xc, y, Xc_t, ci, folds)
     ol, tl, _ = run_lgbm_cv(Xg, y, Xg_t, cat_cols, folds)
     ox, tx, _ = run_xgb_cv(Xg, y, Xg_t, folds)

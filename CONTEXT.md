@@ -103,6 +103,15 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 - Not: arama depth<=8 + iter 1500/2500 (hız); final retrain 3000/5000. best_params faz9_tuning_log.json.
 - Submission hazır: sub_2026-06-10_tuned_blend_woof85.49.csv (YARIN submit adayı #1).
 
+### 🤔 Faz 10-11: bagging (nötr) + pseudo (şüpheli +1.28)
+- Faz 10 SEED BAGGING (#2): blend 85.58 vs tuned 85.49 (-0.086, NÖTR). Bireysel iyileşti ama
+  blend çeşitliliği azaldı. Değer: varyans düşük = private robustluk (yedek aday).
+- Faz 11 PSEUDO (#4): wOOF **84.30** (-1.28!) AMA ⚠️ OOF-ŞİŞMESİ kuvvetle muhtemel. 3000 test
+  satırı (en düşük 3-GBM std, ~%60'ı 2024-2026) kendi tahminiyle etiketlenip train'e katıldı.
+  Ağırlıklı metrik geç-yılı vurguluyor -> model kendi emin geç-yıl tahminini pekiştirip OOF'u
+  yapay düşürüyor olabilir. GERÇEKLİĞİ PUBLIC'te doğrulanmalı; OOF'a TEK BAŞINA güvenME.
+  Submit adayı (riskli yüksek-getiri).
+
 ### ❌ Faz 8: explicit sentiment feature REDDEDİLDİ (wOOF -0.31)
 - Formül-avının tek bulgusu: net=pos-neg kelime farkı hedefle 0.383 korele (lokalde doğrulandı 0.383).
 - featB'ye (winner) net+pos+neg eklendi, TEK değişken: wOOF 86.09 -> **86.40 (-0.31, KÖTÜ)**.

@@ -94,6 +94,22 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 | 2026-06-09 | Faz 6 sample-weight EĞİTİM | 77.47 | 87.13 | — | -0.85 NET KAYIP; reddedildi |
 | 2026-06-09 | Faz 7-B BERTurk feature (en iyi) | 75.65 | **86.09** | **84.10** | offset +1.99! public beklenenden çok iyi |
 
+### 🧭 STRATEJİK DURUM (2026-06-10, tuning dersi sonrası)
+- **En iyi public = featB 84.10 (#3).** Plato ~84.1. Liderler 83.70/83.93 (fark 0.40).
+- **PUBLIC kanıtı:** public'i hareket ettiren TEK şey yapısal metin sinyali (berturk 86.32->84.10, +2.22).
+  Tek minimal bert-base bile +2.22 verdi -> metin sinyalinde DEV headroom. GBM/tabular DOYGUN.
+- **wOOF ARTIK İNCE AYRIMDA GÜVENİLMEZ** (tuning -0.60 wOOF ama public kötü). Büyük yapısal eklemeler
+  hâlâ wOOF'ta görünür; ince GBM kararları PUBLIC ile verilmeli. wOOF'a argmin-optimize ETME (overfit).
+- **PLAN (azaltma için, öncelik):**
+  1. TRANSFORMER ÇEŞİTLİLİĞİ (electra/xlmr/bert128k) -> featB'ye FEATURE olarak (berturk gibi).
+     Kaggle'da koşuyor. Gelince: `python3 src/faz13_integrate_transformers.py` (auto-detect) -> submit -> public.
+  2. Entegrasyon KONSERVATİF: default GBM paramları + SABİT blend [0.7/0.2/0.1] (faz13 doğrulandı,
+     transformersız featB'yi birebir reproduce ediyor). wOOF yalnız referans.
+  3. GBM churn YOK (tuning/bagging/stacker hepsi nötr-veya-zararlı; aynı wOOF-overfit ailesi).
+- **Submit etme:** tuned(84.19)/bagged/stacker -> wOOF-overfit, ~84.1-84.2, slot israfı. pseudo(84.30)
+  -> farklı mekanizma, düşük beklenti; isteğe bağlı 1 hakla test edilebilir (public karar verir).
+- **faz13** = transformer entegrasyon pipeline'ı HAZIR + doğrulanmış (en önemli artefakt).
+
 ### ⚠️🔑 Faz 9 tuned PUBLIC=84.19 — wOOF KAZANCI TRANSLATE ETMEDİ (metrik overfit!)
 - tuned wOOF 85.49 (-0.60) AMA public **84.19** vs featB 84.10 -> **0.09 KÖTÜ**. Offset +1.99'dan +1.30'a kaydı.
 - TEŞHİS: 150 trial'ı test-yıl-AĞIRLIKLI OOF'a karşı optimize ettik. Bu ağırlıklandırma train'in AZ olan

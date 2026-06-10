@@ -1,0 +1,34 @@
+{
+  "phase": "faz13_transformer_integrate",
+  "date": "2026-06-10",
+  "transformers_found": [],
+  "fixed_blend": [
+    0.7,
+    0.2,
+    0.1
+  ],
+  "fixed": {
+    "plain": 75.64849224261083,
+    "weighted": 86.09200685686723,
+    "by_year": {
+      "2019": 53.8462,
+      "2020": 56.1327,
+      "2021": 62.9795,
+      "2022": 74.8416,
+      "2023": 79.3569,
+      "2024": 76.026,
+      "2025": 106.1321,
+      "2026": 105.2407
+    }
+  },
+  "argmin_ref": {
+    "weights": [
+      0.7,
+      0.2,
+      0.1
+    ],
+    "weighted": 86.09200685686723
+  },
+  "diversity_vs_berturk": {},
+  "note": "KARAR public ile; wOOF ince ayrimda guvenilmez (faz9 dersi)"
+}

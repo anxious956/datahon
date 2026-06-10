@@ -1,0 +1,50 @@
+{
+  "phase": "faz15_pseudo_featb",
+  "date": "2026-06-10",
+  "base_config": "featB (faz7 orijinal sade paramlar, tune YOK)",
+  "std_seeds": [
+    42,
+    7,
+    123
+  ],
+  "train_seed": 42,
+  "pseudo_frac": 0.3,
+  "pseudo_weight": 0.5,
+  "n_pseudo": 3000,
+  "pseudo_year_dist": {
+    "2025": 628,
+    "2024": 627,
+    "2026": 531,
+    "2023": 395,
+    "2022": 307,
+    "2021": 222,
+    "2020": 156,
+    "2019": 134
+  },
+  "pseudo_std_median_selected": 0.09906661873194576,
+  "pseudo_std_median_all": 0.218943331108122,
+  "blend_weights": {
+    "cat": 0.75,
+    "lgb": 0.25,
+    "xgb": 0.0
+  },
+  "result": {
+    "plain": 74.85303812330861,
+    "weighted": 84.99088185568058,
+    "by_year": {
+      "2019": 53.6928,
+      "2020": 55.899,
+      "2021": 62.6508,
+      "2022": 74.3539,
+      "2023": 78.0743,
+      "2024": 74.8716,
+      "2025": 104.8519,
+      "2026": 103.5673
+    }
+  },
+  "note": "wOOF REFERANS, pseudo-self-validation ile şişebilir; karar PUBLIC ile.",
+  "key_metrics": {
+    "corr_vs_faz7": 0.9994291276126351,
+    "mean_abs_dev_vs_faz7": 0.34331268137028076
+  }
+}

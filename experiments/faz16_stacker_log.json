@@ -1,0 +1,56 @@
+{
+  "phase": "faz16_stacker",
+  "date": "2026-06-10",
+  "has_tabpfn": false,
+  "tabpfn_corr_vs_gbm_blend": null,
+  "fixed_blend_3gbm": {
+    "weighted": 86.09200685686723,
+    "by_year": {
+      "2019": 53.8462,
+      "2020": 56.1327,
+      "2021": 62.9795,
+      "2022": 74.8416,
+      "2023": 79.3569,
+      "2024": 76.026,
+      "2025": 106.1321,
+      "2026": 105.2407
+    }
+  },
+  "linear": {
+    "weighted": 96.9367156501691,
+    "alpha": 1.0
+  },
+  "variants": {
+    "no_tabpfn": {
+      "cols": [
+        "cat",
+        "lgb",
+        "xgb",
+        "lin",
+        "text_meta",
+        "emb_meta",
+        "berturk_meta"
+      ],
+      "ridge": {
+        "alpha": 0.1,
+        "weighted": 85.73839676378347
+      },
+      "lgb": {
+        "weighted": 87.16917700351354
+      }
+    }
+  },
+  "winner": "no_tabpfn_ridge",
+  "winner_weighted": 85.73839676378347,
+  "winner_by_year": {
+    "2019": 53.9565,
+    "2020": 56.2713,
+    "2021": 62.5174,
+    "2022": 74.5396,
+    "2023": 78.8105,
+    "2024": 75.2285,
+    "2025": 105.9547,
+    "2026": 105.055
+  },
+  "note": "wOOF REFERANS (faz9 dersi); karar PUBLIC ile."
+}

@@ -112,9 +112,12 @@ def tune(name, n_trials, objective):
     study = optuna.create_study(direction='minimize',
                                 sampler=optuna.samplers.TPESampler(seed=SEED),
                                 pruner=optuna.pruners.MedianPruner(n_warmup_steps=2))
-    study.optimize(objective, n_trials=n_trials, show_progress_bar=False)
-    print(f"[{name}] {n_trials} trial, en iyi wOOF={study.best_value:.4f} ({time.time()-t0:.0f}s)")
-    print(f"  params: {study.best_params}")
+    def cb(st, tr):  # canlı ilerleme (buffer'a takılmasın diye her trial yazar)
+        tag = 'PRUNE' if tr.state.name == 'PRUNED' else f"{tr.value:.4f}" if tr.value else '-'
+        print(f"  [{name}] trial {tr.number+1}/{n_trials} {tag} | best={st.best_value:.4f} | {time.time()-t0:.0f}s", flush=True)
+    study.optimize(objective, n_trials=n_trials, show_progress_bar=False, callbacks=[cb])
+    print(f"[{name}] {n_trials} trial, en iyi wOOF={study.best_value:.4f} ({time.time()-t0:.0f}s)", flush=True)
+    print(f"  params: {study.best_params}", flush=True)
     return study
 
 
@@ -135,10 +138,10 @@ def main():
 
     # ---------- CatBoost ----------
     def cat_obj(trial):
-        params = dict(loss_function='RMSE', eval_metric='RMSE', iterations=3000,
-                      random_seed=SEED, od_type='Iter', od_wait=200, verbose=False,
+        params = dict(loss_function='RMSE', eval_metric='RMSE', iterations=1500,
+                      random_seed=SEED, od_type='Iter', od_wait=150, verbose=False,
                       allow_writing_files=False,
-                      depth=trial.suggest_int('depth', 4, 9),
+                      depth=trial.suggest_int('depth', 4, 8),
                       learning_rate=trial.suggest_float('learning_rate', 0.015, 0.12, log=True),
                       l2_leaf_reg=trial.suggest_float('l2_leaf_reg', 1.0, 20.0, log=True),
                       random_strength=trial.suggest_float('random_strength', 0.0, 3.0),
@@ -150,7 +153,7 @@ def main():
 
     # ---------- LightGBM ----------
     def lgb_obj(trial):
-        params = dict(objective='regression', metric='l2', n_estimators=5000,
+        params = dict(objective='regression', metric='l2', n_estimators=2500,
                       random_state=SEED, n_jobs=-1, verbosity=-1, subsample_freq=1,
                       learning_rate=trial.suggest_float('learning_rate', 0.015, 0.12, log=True),
                       num_leaves=trial.suggest_int('num_leaves', 15, 160),
@@ -165,11 +168,11 @@ def main():
 
     # ---------- XGBoost ----------
     def xgb_obj(trial):
-        params = dict(objective='reg:squarederror', eval_metric='rmse', n_estimators=5000,
+        params = dict(objective='reg:squarederror', eval_metric='rmse', n_estimators=2500,
                       tree_method='hist', enable_categorical=True, random_state=SEED, n_jobs=-1,
-                      early_stopping_rounds=200,
+                      early_stopping_rounds=150,
                       learning_rate=trial.suggest_float('learning_rate', 0.015, 0.12, log=True),
-                      max_depth=trial.suggest_int('max_depth', 4, 10),
+                      max_depth=trial.suggest_int('max_depth', 4, 9),
                       min_child_weight=trial.suggest_float('min_child_weight', 1.0, 15.0),
                       subsample=trial.suggest_float('subsample', 0.6, 1.0),
                       colsample_bytree=trial.suggest_float('colsample_bytree', 0.5, 1.0),

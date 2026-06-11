@@ -94,6 +94,19 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 | 2026-06-09 | Faz 6 sample-weight EĞİTİM | 77.47 | 87.13 | — | -0.85 NET KAYIP; reddedildi |
 | 2026-06-09 | Faz 7-B BERTurk feature (en iyi) | 75.65 | **86.09** | **84.10** | offset +1.99! public beklenenden çok iyi |
 
+### 🔬 Faz 16: TabPFN v2 (ham tabular) — korelasyon 0.96 (eşiği geçti) AMA blend wOOF +1.8
+- TabPFN v2 (Kaggle GPU, sadece 39 sayısal+5 kategorik, text YOK): düz OOF 78.81 (Faz1 81.19'dan iyi!),
+  ağırlıklı 89.98 (featB 86.09'dan zayıf — text yok). Yıl: 2025/26'da belirgin daha kötü (112.7/109.9).
+- KORELASYON (OOF): TabPFN<->featB 0.9601, <->tuned GBM ~0.957, <->berturk 0.6922.
+  -> %80 "bağımsızlık" eşiğini GEÇTİ (saf kurala göre eklenmez; ikisi de aynı tabular feature'da).
+- AMA BLEND: (1-a)featB + a*TabPFN sweep -> a=0.30'da wOOF 84.29 (+1.80), HER YIL uniform iyileşme
+  (2025:+1.30, 2026:+2.54). Sebep: pred-corr 0.96 ama HATA yapısı farklı (transformer vs GBM) -> varyans düşer.
+- Tuning-overfit'inden FARKLI: TabPFN bağımsız eğitildi, wOOF'a optimize edilmedi (yalnız 'a' wOOF'tan).
+  Yapısal daha güvenilir AMA yine de PUBLIC ŞART (wOOF kesin değil).
+- AKSIYON: en iyi base (stacker_v2 public 83.85) + TabPFN blend, 3 aday: a15/a20/a30. a=0.20 ile public test;
+  iyiyse a=0.30'a çık, kötüyse TabPFN translate etmiyor (tuning gibi) -> bırak.
+- stacker_v2 (public 83.85) artık MEVCUT EN İYİ (featB 84.10'u geçti); stackerv2<->TabPFN test corr 0.9703.
+
 ### 🧭 STRATEJİK DURUM (2026-06-10, tuning dersi sonrası)
 - **En iyi public = featB 84.10 (#3).** Plato ~84.1. Liderler 83.70/83.93 (fark 0.40).
 - **PUBLIC kanıtı:** public'i hareket ettiren TEK şey yapısal metin sinyali (berturk 86.32->84.10, +2.22).

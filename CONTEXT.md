@@ -99,7 +99,9 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
   RAĞMEN hata-çeşitliliği gerçek + public'e yansıdı. Eski lider 83.70'ti -> muhtemelen #1 bölgesi.
 - Tuning-overfit'inin AKSİNE: TabPFN translate etti (yapısal bağımsız model, wOOF'a optimize değil).
 - Offset(a=0.20)=84.61-83.19=1.42. wOOF optimum a=0.35 (84.23, plato 0.30-0.40) -> proj public ~82.8.
-- SIRADA: a=0.35 submit (optimum). İyiyse a=0.30-0.40 plato civarı final. TabPFN = gerçek kazanç kaldıracı.
+- a=0.35 PUBLIC=83.248 (a=0.20'den KÖTÜ!). wOOF optimum(0.35) != public optimum(~0.20). Public çanağı:
+  a0->83.85, a0.20->83.19, a0.35->83.25. EN İYİ a=0.20 (83.185). wOOF ince ayarda yine yanıltı.
+- KARAR: a=0.20 (83.185) = mevcut en iyi, final aday. a-tuning doygun (kazanç <0.05). TabPFN = büyük kaldıraç oldu.
 
 ### 🔬 Faz 16: TabPFN v2 (ham tabular) — korelasyon 0.96 (eşiği geçti) AMA blend wOOF +1.8
 - TabPFN v2 (Kaggle GPU, sadece 39 sayısal+5 kategorik, text YOK): düz OOF 78.81 (Faz1 81.19'dan iyi!),

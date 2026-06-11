@@ -1,0 +1,20 @@
+{
+  "phase": "faz17_megastacker",
+  "date": "2026-06-11",
+  "members": [
+    "stacker_v2",
+    "tabpfn",
+    "berturk",
+    "tuned_cat"
+  ],
+  "results_woof": {
+    "anchor_0.8_0.2": 84.69679612276526,
+    "nnls": 84.28890861466733,
+    "ridge_a5": 83.88196203076562,
+    "ridge_a20": 83.88177027865095,
+    "ridge_a60": 83.88127241903128,
+    "lgb_yearaware": 85.17771837203594
+  },
+  "anchor_woof": 84.69679612276526,
+  "note": "anchor=public 83.185 kalibrasyon; wOOF guvenilmez, BUYUK delta + public sart"
+}

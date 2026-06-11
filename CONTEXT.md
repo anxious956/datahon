@@ -94,6 +94,14 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 | 2026-06-09 | Faz 6 sample-weight EĞİTİM | 77.47 | 87.13 | — | -0.85 NET KAYIP; reddedildi |
 | 2026-06-09 | Faz 7-B BERTurk feature (en iyi) | 75.65 | **86.09** | **84.10** | offset +1.99! public beklenenden çok iyi |
 
+### ⛔ Faz 17 mega-stacker: wOOF-OVERFIT tuzağı (submit edilmedi)
+- Anchor (0.8 stacker_v2+0.2 tabpfn)=public 83.185, wOOF 84.70 -> offset 1.51.
+- Ridge stacker wOOF 83.88 (+0.82) AMA tabpfn ağırlığını 0.49'a çıkarıyor. DOĞRUDAN public kanıtı
+  aleyhte: a=0.20(83.185)<a=0.35(83.248) -> tabpfn artırmak public'i KÖTÜLEŞTİRDİ. Ridge 0.49 -> kötü.
+- Yıl-farkında LGBM-stacker da overfit (wOOF 85.18, kötü). Faz9 tuning tuzağı tekrar.
+- KARAR: lokal stacker/re-weight cephesi KAPALI (wOOF seçemiyor). Tek gerçek lever: YENİ sinyal
+  (transformerlar). Onları KONSERVATİF (sabit küçük ağırlık) blend'le, wOOF-argmin DEĞİL.
+
 ### 🚀🎯 BREAKTHROUGH: TabPFN blend public=83.19 (TRANSLATE ETTİ! +0.66)
 - a=0.20 (stacker_v2 83.85 + %20 TabPFN) -> public **83.185** (-0.66!). Korelasyon 0.96 olmasına
   RAĞMEN hata-çeşitliliği gerçek + public'e yansıdı. Eski lider 83.70'ti -> muhtemelen #1 bölgesi.

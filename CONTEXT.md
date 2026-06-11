@@ -94,6 +94,14 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 | 2026-06-09 | Faz 6 sample-weight EĞİTİM | 77.47 | 87.13 | — | -0.85 NET KAYIP; reddedildi |
 | 2026-06-09 | Faz 7-B BERTurk feature (en iyi) | 75.65 | **86.09** | **84.10** | offset +1.99! public beklenenden çok iyi |
 
+### ❌ Faz 18: bert128k REDUNDANT (berturk ile 0.96 korele, blend'i bozuyor)
+- bert128k OOF (Kaggle): wOOF 148.1 (berturk 146.7'den kötü, geç-yıl zayıf 2025:178/2026:181).
+- KORELASYON: bert128k<->berturk 0.9626 (!), <->stacker_v2 0.79, <->tabpfn 0.68.
+- berturk ZATEN stacker_v2'de -> bert128k yeni sinyal DEĞİL, aynı metnin zayıf kopyası.
+- anchor(83.185)'a +0.05/+0.10 ekle -> wOOF 84.72/85.08 (YÜKSELIYOR=kötü). Submit edilmeyecek.
+- TabPFN'den fark: TabPFN farklı MODALITE (tabular FM, ortogonal) -> yardım etti; bert128k aynı aile.
+- DERS: metin transformerları doygun (hepsi berturk'e ~0.96). electra (farklı ön-eğitim) son umut.
+
 ### ⛔ Faz 17 mega-stacker: wOOF-OVERFIT tuzağı (submit edilmedi)
 - Anchor (0.8 stacker_v2+0.2 tabpfn)=public 83.185, wOOF 84.70 -> offset 1.51.
 - Ridge stacker wOOF 83.88 (+0.82) AMA tabpfn ağırlığını 0.49'a çıkarıyor. DOĞRUDAN public kanıtı

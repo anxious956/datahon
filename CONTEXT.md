@@ -94,6 +94,13 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 | 2026-06-09 | Faz 6 sample-weight EĞİTİM | 77.47 | 87.13 | — | -0.85 NET KAYIP; reddedildi |
 | 2026-06-09 | Faz 7-B BERTurk feature (en iyi) | 75.65 | **86.09** | **84.10** | offset +1.99! public beklenenden çok iyi |
 
+### 🚀🎯 BREAKTHROUGH: TabPFN blend public=83.19 (TRANSLATE ETTİ! +0.66)
+- a=0.20 (stacker_v2 83.85 + %20 TabPFN) -> public **83.185** (-0.66!). Korelasyon 0.96 olmasına
+  RAĞMEN hata-çeşitliliği gerçek + public'e yansıdı. Eski lider 83.70'ti -> muhtemelen #1 bölgesi.
+- Tuning-overfit'inin AKSİNE: TabPFN translate etti (yapısal bağımsız model, wOOF'a optimize değil).
+- Offset(a=0.20)=84.61-83.19=1.42. wOOF optimum a=0.35 (84.23, plato 0.30-0.40) -> proj public ~82.8.
+- SIRADA: a=0.35 submit (optimum). İyiyse a=0.30-0.40 plato civarı final. TabPFN = gerçek kazanç kaldıracı.
+
 ### 🔬 Faz 16: TabPFN v2 (ham tabular) — korelasyon 0.96 (eşiği geçti) AMA blend wOOF +1.8
 - TabPFN v2 (Kaggle GPU, sadece 39 sayısal+5 kategorik, text YOK): düz OOF 78.81 (Faz1 81.19'dan iyi!),
   ağırlıklı 89.98 (featB 86.09'dan zayıf — text yok). Yıl: 2025/26'da belirgin daha kötü (112.7/109.9).

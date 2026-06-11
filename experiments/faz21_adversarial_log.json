@@ -1,0 +1,6 @@
+{
+  "auc": 0.65415581,
+  "ref_woof": 86.27980922210608,
+  "adv_woof": 86.33078514001537,
+  "verdict": "RED (Faz6 patterni)"
+}

@@ -1,0 +1,19 @@
+{
+  "phase": "faz20_stack_v3",
+  "date": "2026-06-11",
+  "members": [
+    "cat",
+    "lgb",
+    "xgb",
+    "lin",
+    "text_meta",
+    "emb_meta",
+    "berturk_meta",
+    "bert128k_meta",
+    "electra_meta"
+  ],
+  "stack_v3_woof": 85.4432764982894,
+  "alpha": 30.0,
+  "kombo_v2_woof": 84.26536299691814,
+  "old_kombo_woof": 84.07183936950534
+}

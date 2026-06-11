@@ -94,6 +94,12 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 | 2026-06-09 | Faz 6 sample-weight EĞİTİM | 77.47 | 87.13 | — | -0.85 NET KAYIP; reddedildi |
 | 2026-06-09 | Faz 7-B BERTurk feature (en iyi) | 75.65 | **86.09** | **84.10** | offset +1.99! public beklenenden çok iyi |
 
+### ⚪ Faz 20 stack_v3: taban cephesi de DOYDU (kombo'ya katkı yok)
+- stack_v3 (9-üye nested-Ridge, 5-meta) wOOF 85.44 (sv2 85.74'ten iyi) AMA kombo'ya eklenince
+  tüm karışımlar 84.07-84.11 gürültü bandında (sv3<->sv2 0.997, <->f13 0.998 korele).
+- ESKİ kombo (82.78) en iyi kalıyor. Submission harcanmadı. Kalan umut: (A) LLM-feature (yeni
+  sinyal türü, Kaggle'da koşuyor) + (B) adversarial (düşük beklenti, test ediliyor).
+
 ### 🚀 KOMBO public=82.78 (+0.37!) — metin-meta feature mekanizması YİNE çalıştı
 - 0.375*sv2 + 0.375*(featB+bert128k_meta+electra_meta) + 0.25*tabpfn -> public **82.7815**.
 - Top-10 kapısı 82.63 -> ~#11, kapıya 0.15. wOOF tahmini (-0.51 -> proj 82.65) bu kez TUTTU

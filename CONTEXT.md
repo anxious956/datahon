@@ -94,6 +94,13 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 | 2026-06-09 | Faz 6 sample-weight EĞİTİM | 77.47 | 87.13 | — | -0.85 NET KAYIP; reddedildi |
 | 2026-06-09 | Faz 7-B BERTurk feature (en iyi) | 75.65 | **86.09** | **84.10** | offset +1.99! public beklenenden çok iyi |
 
+### ❌ Faz 19: electra da REDUNDANT — METİN CEPHESİ KAPANDI
+- electra wOOF 148.3, <->berturk 0.939, <->bert128k 0.928. Anchor'a en iyi katkı +0.03 ağırlıkla
+  wOOF -0.10 (gürültü; wOOF bu boyutta 2 kez yanılttı). Submit YOK.
+- ÜÇ Türkçe transformer (berturk/bert128k/electra) birbirine ~0.93-0.96 -> hepsi aynı metin sinyali.
+- SONUÇ: tek işe yarayan çeşitlilik FARKLI MODALİTE idi (TabPFN). Metin doygun. Agresif keşif bitti.
+- FİNAL: a=0.20 (83.185) ana aday. Public çanağı min ~a=0.25 tahmini (parabolik: ~83.15, marjinal).
+
 ### ❌ Faz 18: bert128k REDUNDANT (berturk ile 0.96 korele, blend'i bozuyor)
 - bert128k OOF (Kaggle): wOOF 148.1 (berturk 146.7'den kötü, geç-yıl zayıf 2025:178/2026:181).
 - KORELASYON: bert128k<->berturk 0.9626 (!), <->stacker_v2 0.79, <->tabpfn 0.68.

@@ -94,6 +94,13 @@ Toplam ~11.32 MB, 3 dosya. train.csv satır sayısı henüz teyit edilmedi.
 | 2026-06-09 | Faz 6 sample-weight EĞİTİM | 77.47 | 87.13 | — | -0.85 NET KAYIP; reddedildi |
 | 2026-06-09 | Faz 7-B BERTurk feature (en iyi) | 75.65 | **86.09** | **84.10** | offset +1.99! public beklenenden çok iyi |
 
+### 🚀 KOMBO public=82.78 (+0.37!) — metin-meta feature mekanizması YİNE çalıştı
+- 0.375*sv2 + 0.375*(featB+bert128k_meta+electra_meta) + 0.25*tabpfn -> public **82.7815**.
+- Top-10 kapısı 82.63 -> ~#11, kapıya 0.15. wOOF tahmini (-0.51 -> proj 82.65) bu kez TUTTU
+  (yapısal değişiklik translate ediyor; reweight oyunları etmiyor — pattern netleşti).
+- Board: #1 81.33, top10 82.63. Ekran "3 DAYS TO GO" diyor (yarın gece değil — teyit et).
+- KALAN KANITLI LEVER: 5-model stacker'ı (sv2) yeni metalarla yeniden kur -> kombo_v2.
+
 ### ❌ Faz 19: electra da REDUNDANT — METİN CEPHESİ KAPANDI
 - electra wOOF 148.3, <->berturk 0.939, <->bert128k 0.928. Anchor'a en iyi katkı +0.03 ağırlıkla
   wOOF -0.10 (gürültü; wOOF bu boyutta 2 kez yanılttı). Submit YOK.

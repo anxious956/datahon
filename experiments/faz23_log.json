@@ -1,0 +1,15 @@
+{
+  "phase": "faz23_llm_kombo",
+  "date": "2026-06-12",
+  "llm_sub": [
+    "ton",
+    "gelisim",
+    "somut_basari"
+  ],
+  "sv2_llm_woof": 85.61763791145421,
+  "sv2_alpha": 30.0,
+  "f13_llm_woof": 85.6459296376269,
+  "old_kombo_woof": 84.07183936950534,
+  "new_kombo_woof": 83.98152945081101,
+  "corr_old_new": 0.999487145378398
+}

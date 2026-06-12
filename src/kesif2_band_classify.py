@@ -15,8 +15,8 @@ trp = train[YEAR].value_counts(normalize=True)
 w = np.nan_to_num(train[YEAR].map(lambda v: tep.get(v,0.0)/trp.get(v,np.nan)).values)
 wm = lambda p: float(np.sum(w*(y-p)**2)/np.sum(w))
 
-band = np.clip((y//10).astype(int), 0, 9)
-nb = 10; centers = np.array([5+10*i for i in range(nb)], dtype='float64')
+band = np.clip((y//10).astype(int), 4, 9) - 4   # seyrek alt bantlar (143 örnek) 40-50'ye birleşik -> 6 sınıf
+nb = 6; centers = np.array([45+10*i for i in range(nb)], dtype='float64')
 print("band dağılımı:", np.bincount(band, minlength=nb))
 base_acc = np.bincount(band).max()/len(band)
 print(f"baseline (çoğunluk) acc = {base_acc:.4f}")
@@ -32,11 +32,13 @@ print(f"feature boyut: emb{emb.shape[1]} + word{Xw.shape[1]} + char{Xc.shape[1]}
 
 oof_proba = np.zeros((len(y), nb)); oof_pred_band = np.zeros(len(y), dtype=int)
 for tr,va in folds:
-    clf = LGBMClassifier(objective='multiclass', num_class=nb, n_estimators=300, learning_rate=0.05,
+    clf = LGBMClassifier(objective='multiclass', num_class=nb, n_estimators=200, learning_rate=0.07,
                          num_leaves=31, min_child_samples=50, subsample=0.8, colsample_bytree=0.5,
                          reg_lambda=2.0, random_state=42, n_jobs=-1, verbosity=-1)
     clf.fit(X[tr], band[tr])
-    oof_proba[va] = clf.predict_proba(X[va]); oof_pred_band[va] = oof_proba[va].argmax(1)
+    p = clf.predict_proba(X[va])
+    oof_proba[np.ix_(va, clf.classes_)] = p   # eksik sınıf güvenliği (np.ix_ = kalıcı yazım)
+    oof_pred_band[va] = oof_proba[va].argmax(1)
 acc = (oof_pred_band==band).mean()
 within1 = (np.abs(oof_pred_band-band)<=1).mean()
 print(f"\nband-accuracy = {acc:.4f}  (baseline {base_acc:.4f}, lift {acc-base_acc:+.4f})")

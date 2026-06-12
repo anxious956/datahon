@@ -1,6 +1,10 @@
 # ============= LLM 14B + FEW-SHOT DIRECT PREDICTOR — TEK HÜCRE (max sinyal) =============
+import os
+os.environ['PYTORCH_CUDA_ALLOC_CONF']='expandable_segments:True'
 import subprocess, sys
 subprocess.run([sys.executable,'-m','pip','install','-q','-U','bitsandbytes>=0.46.1'], check=False)
+import gc, torch
+gc.collect(); torch.cuda.empty_cache()
 
 # Qwen2.5-14B-Instruct + few-shot. 7B zero-shot 0.53 verdi; daha BÜYÜK model + few-shot ->
 # berturk(0.70)'in kaçırdığı yeni sinyal şansı en yüksek. Çıktı: llm_pred2_{train,test}.csv
@@ -29,7 +33,7 @@ if tok.pad_token is None: tok.pad_token = tok.eos_token
 bnb = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type='nf4',
                          bnb_4bit_compute_dtype=torch.float16, bnb_4bit_use_double_quant=True)
 model = AutoModelForCausalLM.from_pretrained(MODEL_PATH, quantization_config=bnb,
-                                             device_map='auto'); model.eval()
+                                             device_map={'':0}); model.eval()   # tek GPU
 print('4-bit yüklendi, GPU bellek:', round(torch.cuda.memory_allocated(0)/1e9,1),'GB')
 
 base = [p for p in glob.glob('/kaggle/input/*') if os.path.exists(f'{p}/train.csv')]

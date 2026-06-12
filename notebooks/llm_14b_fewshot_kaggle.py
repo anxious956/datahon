@@ -19,10 +19,15 @@ def rank(p):
     return 9
 MODEL_PATH = sorted(cands, key=lambda p:(rank(p), len(p)))[0]
 print("MODEL:", MODEL_PATH)
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 tok = AutoTokenizer.from_pretrained(MODEL_PATH, padding_side='left')
 if tok.pad_token is None: tok.pad_token = tok.eos_token
-model = AutoModelForCausalLM.from_pretrained(MODEL_PATH, torch_dtype=torch.float16, device_map='auto'); model.eval()
+# 4-bit NF4: 14B ~8GB -> T4'e rahat sığar, generation OOM olmaz, kalite ~fp16
+bnb = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type='nf4',
+                         bnb_4bit_compute_dtype=torch.float16, bnb_4bit_use_double_quant=True)
+model = AutoModelForCausalLM.from_pretrained(MODEL_PATH, quantization_config=bnb,
+                                             device_map='auto'); model.eval()
+print('4-bit yüklendi, GPU bellek:', round(torch.cuda.memory_allocated(0)/1e9,1),'GB')
 
 base = [p for p in glob.glob('/kaggle/input/*') if os.path.exists(f'{p}/train.csv')]
 if not base:
@@ -56,7 +61,7 @@ def parse_one(s):
     return 77.0 if not m else float(np.clip(float(m.group(1)),0,100))
 
 @torch.no_grad()
-def predict(texts, tag, sb, bs=8):   # 14B -> küçük batch
+def predict(texts, tag, sb, bs=12):   # 14B -> küçük batch
     part=f'/kaggle/working/fs14_{tag}.csv'; done=0; rows=[]
     if os.path.exists(part): rows=pd.read_csv(part)['pred'].tolist(); done=len(rows); print(f"[{tag}] devam {done}")
     t0=time.time()

@@ -58,7 +58,8 @@ def main():
     train_fe['llm_pred'] = lp_o; test_fe['llm_pred'] = lp_t
     llm3 = [f'llm_{c}' for c in LLM_FEATS]
     llm4 = llm3 + ['llm_pred']
-    print(f"[faz24] LLM feature setleri: 3={llm3}  4=+llm_pred")
+    num4 = num_cols + llm4   # temel sayısal + 4 LLM feature (faz23 ile aynı mantık)
+    print(f"[faz24] LLM feature setleri: 3={llm3}  4=+llm_pred  | toplam num={len(num4)}")
 
     emb_tr = np.load(os.path.join(exp_dir, EMB_TRAIN_NPY)); emb_te = np.load(os.path.join(exp_dir, EMB_TEST_NPY))
     bt_tr = np.load(os.path.join(exp_dir, 'oof_berturk_train.npy')).astype('float64')
@@ -101,8 +102,8 @@ def main():
     # B) llm_pred GBM-feature (4 feat), stacker ek üye YOK
     print("\n[B] 4-feat GBM (llm_pred feature), sv2 7-üye...")
     t0 = time.time()
-    sv2B_o, sv2B_t, sv2B_w, aB, tmetaB = build_sv2(llm4, add_pred_member=False)
-    f13B_o, f13B_t, _ = build_f13_5meta(llm4, tmetaB)
+    sv2B_o, sv2B_t, sv2B_w, aB, tmetaB = build_sv2(num4, add_pred_member=False)
+    f13B_o, f13B_t, _ = build_f13_5meta(num4, tmetaB)
     kB_o = np.clip(0.375*sv2B_o + 0.375*f13B_o + 0.25*tab_o, 0, 100)
     kB_t = np.clip(0.375*sv2B_t + 0.375*f13B_t + 0.25*tab_t, 0, 100)
     results['B'] = (kB_o, kB_t, sv2B_w)
@@ -111,8 +112,8 @@ def main():
     # C) 4-feat GBM + llm_pred sv2 stacker'a 8. üye
     print("\n[C] 4-feat GBM + llm_pred stacker-üye, sv2 8-üye...")
     t0 = time.time()
-    sv2C_o, sv2C_t, sv2C_w, aC, tmetaC = build_sv2(llm4, add_pred_member=True)
-    f13C_o, f13C_t, _ = build_f13_5meta(llm4, tmetaC)
+    sv2C_o, sv2C_t, sv2C_w, aC, tmetaC = build_sv2(num4, add_pred_member=True)
+    f13C_o, f13C_t, _ = build_f13_5meta(num4, tmetaC)
     kC_o = np.clip(0.375*sv2C_o + 0.375*f13C_o + 0.25*tab_o, 0, 100)
     kC_t = np.clip(0.375*sv2C_t + 0.375*f13C_t + 0.25*tab_t, 0, 100)
     results['C'] = (kC_o, kC_t, sv2C_w)

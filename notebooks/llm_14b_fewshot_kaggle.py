@@ -1,4 +1,7 @@
 # ============= LLM 14B + FEW-SHOT DIRECT PREDICTOR — TEK HÜCRE (max sinyal) =============
+import subprocess, sys
+subprocess.run([sys.executable,'-m','pip','install','-q','-U','bitsandbytes>=0.46.1'], check=False)
+
 # Qwen2.5-14B-Instruct + few-shot. 7B zero-shot 0.53 verdi; daha BÜYÜK model + few-shot ->
 # berturk(0.70)'in kaçırdığı yeni sinyal şansı en yüksek. Çıktı: llm_pred2_{train,test}.csv
 # KURULUM: Add Input -> Models -> "Qwen2.5 14B Instruct" (transformers, 14b-instruct) + Datathon 2026

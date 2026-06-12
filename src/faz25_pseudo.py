@@ -89,6 +89,12 @@ def main():
         tfe['llm_'+c] = lf_tr[c].values.astype('float64'); vfe['llm_'+c] = lf_te[c].values.astype('float64')
     tfe['llm_pred'] = lp_tr['pred'].values.astype('float64'); vfe['llm_pred'] = lp_te['pred'].values.astype('float64')
     num4 = num_cols + [f'llm_{c}' for c in LLM_FEATS] + ['llm_pred']
+    # few-shot LLM (varsa) 5. feature olarak otomatik ekle
+    if os.path.exists(f'{ed}/llm_pred2_train.csv') and os.environ.get('USE_FS','0')=='1':
+        f2t=pd.read_csv(f'{ed}/llm_pred2_train.csv'); f2v=pd.read_csv(f'{ed}/llm_pred2_test.csv')
+        tfe['llm_pred2']=f2t['pred'].values.astype('float64'); vfe['llm_pred2']=f2v['pred'].values.astype('float64')
+        num4 = num4 + ['llm_pred2']
+        print(f"[faz25] few-shot llm_pred2 EKLENDİ -> num4={len(num4)} | corr_y={np.corrcoef(f2t['pred'],y)[0,1]:.4f}")
 
     emb_tr = np.load(f'{ed}/{EMB_TRAIN_NPY}'); emb_te = np.load(f'{ed}/{EMB_TEST_NPY}')
     bt_tr = np.load(f'{ed}/oof_berturk_train.npy').astype('float64'); bt_te = np.load(f'{ed}/berturk_test.npy').astype('float64')

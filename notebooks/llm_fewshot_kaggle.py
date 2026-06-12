@@ -70,7 +70,7 @@ def predict(texts, tag, shotblock, bs=16):
 # 2 örnek-seti ortala
 for which,frame in [('train',train),('test',test)]:
     acc=[]
-    for si,seed in enumerate([11,29]):
+    for si,seed in enumerate([11,29,47]):
         sb=shot_block(pick_shots(seed))
         acc.append(predict(frame[TEXT].fillna('').tolist(), f'{which}_s{si}', sb))
     pred=np.mean(acc,0)

@@ -97,7 +97,9 @@ def main():
     tab_t = np.clip(np.load(f'{ed}/tabpfn_test.npy').astype('float64'), 0, 100)
 
     # pseudo etiket = kombo (faz24-B) test tahmini
-    p_te = np.clip(np.load(f'{ed}/test_faz24_B.npy').astype('float64'), 0, 100)
+    PLABEL = os.environ.get('PLABEL','test_faz24_B')
+    p_te = np.clip(np.load(f'{ed}/{PLABEL}.npy').astype('float64'), 0, 100)
+    print(f'[faz25] pseudo-etiket kaynağı: {PLABEL}')
 
     # üye-uyuşma maskesi (B): mevcut üye test tahminlerinin std'si düşük = güvenli
     members_t = np.column_stack([np.load(f'{ed}/test_sv2_llm.npy'), np.load(f'{ed}/test_stacker_v2.npy'), tab_t])

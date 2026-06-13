@@ -23,7 +23,7 @@ train = pd.read_csv(f'{base}/train.csv'); test = pd.read_csv(f'{base}/test_x.csv
 TEXT='mentor_feedback_text'; ID='student_id'; TGT='career_success_score'
 
 # skor-bandına stratified örnek seç (her bant ~2 örnek), kısa metin tercih (token tasarrufu)
-def pick_shots(seed, n_per_band=2):
+def pick_shots(seed, n_per_band=1):
     rng = np.random.RandomState(seed); shots=[]
     tr = train.copy(); tr['_len']=tr[TEXT].str.len()
     for lo in range(40,100,10):
@@ -34,7 +34,7 @@ def pick_shots(seed, n_per_band=2):
 def shot_block(idxs):
     lines=["Örnek değerlendirmeler ve gerçek skorları:"]
     for i in idxs:
-        t = str(train.loc[i,TEXT])[:380].replace("\n"," ")
+        t = str(train.loc[i,TEXT])[:260].replace("\n"," ")
         lines.append(f'- Metin: "{t}" -> skor: {int(round(train.loc[i,TGT]))}')
     return "\n".join(lines)
 
@@ -52,13 +52,13 @@ def parse_one(s):
     return float(np.clip(float(m.group(1)),0,100))
 
 @torch.no_grad()
-def predict(texts, tag, shotblock, bs=16):
+def predict(texts, tag, shotblock, bs=32):
     part=f'/kaggle/working/fs_{tag}.csv'; done=0; rows=[]
     if os.path.exists(part): rows=pd.read_csv(part)['pred'].tolist(); done=len(rows); print(f"[{tag}] devam {done}")
     t0=time.time()
     for s in range(done,len(texts),bs):
-        enc=tok(make_prompts(texts[s:s+bs],shotblock),return_tensors='pt',padding=True,truncation=True,max_length=1100).to(model.device)
-        out=model.generate(**enc,max_new_tokens=16,do_sample=False,pad_token_id=tok.pad_token_id)
+        enc=tok(make_prompts(texts[s:s+bs],shotblock),return_tensors='pt',padding=True,truncation=True,max_length=900).to(model.device)
+        out=model.generate(**enc,max_new_tokens=10,do_sample=False,pad_token_id=tok.pad_token_id)
         dec=tok.batch_decode(out[:,enc['input_ids'].shape[1]:],skip_special_tokens=True)
         rows+=[parse_one(d) for d in dec]
         if (s//bs)%10==0:
@@ -70,7 +70,7 @@ def predict(texts, tag, shotblock, bs=16):
 # 2 örnek-seti ortala
 for which,frame in [('train',train),('test',test)]:
     acc=[]
-    for si,seed in enumerate([11,29,47]):
+    for si,seed in enumerate([11]):  # tek seed (hız)
         sb=shot_block(pick_shots(seed))
         acc.append(predict(frame[TEXT].fillna('').tolist(), f'{which}_s{si}', sb))
     pred=np.mean(acc,0)

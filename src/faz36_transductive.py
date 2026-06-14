@@ -43,14 +43,14 @@ Xtr_b=mat(tfe,basef); Xte_b=mat(vfe,basef)
 allX=np.vstack([Xtr_b,Xte_b]); sc=StandardScaler().fit(allX); allZ=sc.transform(allX)
 ntr=len(Xtr_b)
 # (1) train+test ortak PCA
-pca=PCA(n_components=10,random_state=42).fit(allZ); P=pca.transform(allZ)
+pca=PCA(n_components=8,random_state=42).fit(allZ); P=pca.transform(allZ)
 # (2) train+test KMeans cluster -> mesafe feature
-km=KMeans(n_clusters=12,random_state=42,n_init=5).fit(allZ); D=km.transform(allZ)  # her cluster'a mesafe
+km=KMeans(n_clusters=8,random_state=42,n_init=3).fit(allZ); D=km.transform(allZ)  # her cluster'a mesafe
 # (3) test-istatistik: her satırın TEST dağılımındaki z-skoru (test mean/std ile)
 te_mean=Xte_b.mean(0); te_std=Xte_b.std(0)+1e-9
 Ztest=(allX-te_mean)/te_std  # test-dağılımına göre konum
-trans=np.hstack([P,D,Ztest[:,:15]])  # PCA10 + cluster-dist12 + test-z15
-print(f"[faz36] transductive feature: PCA10+clusterdist12+testz15 = {trans.shape[1]}")
+trans=np.hstack([P,D])  # PCA8 + cluster-dist8 (hafif)
+print(f'[faz36] transductive feature: PCA8+clusterdist8 = {trans.shape[1]}',flush=True)
 # diversity ensemble: base vs base+transductive
 p_te=np.clip(np.load(f'{ed}/test_pseudoR1_B_agree_pw05.npy'),0,100); tab_e=Lf('tabpfn_test.npy')
 members_t=np.column_stack([np.load(f'{ed}/test_sv2_llm.npy'),np.load(f'{ed}/test_stacker_v2.npy'),tab_e])
@@ -63,12 +63,12 @@ def trio(Xtr,Xte):
         for tr,va in folds:
             m=fn().fit(np.vstack([Xa[tr],Xp]),np.concatenate([y[tr],yp])); o[va]=m.predict(Xa[va]); t+=m.predict(Xta)/len(folds)
         return np.clip(o,0,100),np.clip(t,0,100)
-    eo,et=aug(lambda:ExtraTreesRegressor(400,min_samples_leaf=5,n_jobs=-1,random_state=42),Xtr,Xte)
+    eo,et=aug(lambda:ExtraTreesRegressor(300,min_samples_leaf=5,n_jobs=-1,random_state=42),Xtr,Xte)
     ho,ht=aug(lambda:HistGradientBoostingRegressor(max_iter=600,learning_rate=0.05,max_depth=4,l2_regularization=1.0,random_state=42),Xtr,Xte)
     mo,mt=aug(lambda:MLPRegressor(hidden_layer_sizes=(128,64),alpha=1e-3,max_iter=300,early_stopping=True,random_state=42),Xz,Xtz)
     return np.mean([eo,ho,mo],0),np.mean([et,ht,mt],0)
 Ptr,Pte=trans[:ntr],trans[ntr:]
-print("\n[BASE] transductive'siz..."); a0,_=trio(Xtr_b,Xte_b)
+a0=np.load(f"{ed}/oof_trio_div.npy")  # BASE bilinen (bw45 82.36)
 print("[+TRANS] transductive'li..."); a1,t1=trio(np.hstack([Xtr_b,Ptr]),np.hstack([Xte_b,Pte]))
 print(f"\n{'':>10}{'trio wOOF':>12}{'bw15':>10}{'bw45':>10}")
 for nm,ao in [('BASE',a0),('+TRANS',a1)]:
